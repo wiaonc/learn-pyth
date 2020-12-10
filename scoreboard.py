@@ -17,7 +17,7 @@ class Scoreboard():
 		# 显示得分信息时使用的字体设置
 		self.text_color = (30, 30, 30)
 		self.font = pygame.font.SysFont(None, 32)
-
+		self.dts ={}
 		# 准备包含最高得分和当前得分的图像
 		self.prep_score()
 		self.prep_high_score()
@@ -91,19 +91,38 @@ class Scoreboard():
 #		if not os.path.exists('data'):#检查 该目录没有data文件
 #			os.mkdir("data")#创建data文件
 		'''这里换成异常检查文件是否存在似乎更好'''
-#		try:
 		times = time.strftime('%Y-%m-%d %H:%M',time.localtime(time.time()))
-		history = {'times':times,'scores':self.stats.high_score}
-#		dts = {self.stats.high_score:{'times':times,'scores':self.stats.high_score}}
-		#print(self.datas)
-		self.dts ={}
+		history = [{'times':times,'scores':self.stats.high_score}]
+		hsty = {'times':times,'scores':self.stats.high_score}
 		self.data = []
 		for d in self.datas:
-			print(d)
-			#这里目前有个错误，如果储存相同的键则会被替换
-			d[self.stats.high_score] = {'times':times,'scores':self.stats.high_score}
-			self.dts = d
-			print(self.dts)
+			#下面这段在for循环中修改字典耗费了我好多时间才写出来。
+			#原因就是还不太了解字典的属性，以及对逻辑不熟悉
+			#dx={k:v for k,v in d.items() if int(k)==self.stats.high_score}#这段还不知道怎么使用，但是如果用起来肯定是更简洁的
+
+			#self.ds={x:y for x,y in d.items()}
+			#循环遍历字典
+			for key,value in d.items():
+				self.d ={}
+				if int(key) == int(self.stats.high_score):
+					#如果遍历的键和本局分数相同则值再添加一个值（这里的值是列表状态，所以不会影响字典大小）
+					value.append(hsty)
+					#再通过修改键值的方式传递给self。dts（应该是只要不添加新键值就没问题）
+					d[key] = value
+					self.dts = d
+					break
+				elif int(key) != int(self.stats.high_score):
+					#如果键不同就传递原来的键值给self。dts，并且新的属性赋值一个新字典
+					self.dts = d
+					self.d=history
+			if not d.keys():
+				#如果字典是空的就赋值（这项目的是为了防止刚创建文本的时候字典没有数据会导致错误）
+				d[self.stats.high_score] = history
+				self.dts = d
+			elif self.d:
+				#如果self。d有值就添加到self。dts字典里（字典d没有新纪录的键就会导致self。d有个新字典值）
+				self.dts[self.stats.high_score] =self.d
+			break
 		self.data.append(self.dts)
 		with open ('data\historyscore.json','w') as score:
 			json.dump(self.data,score)
@@ -112,6 +131,7 @@ class Scoreboard():
 			self.datas=[]
 			with open ('data\historyscore.json','r') as score:
 				self.datas = json.load(score)
+			print('load')
 			print(self.datas)
 		except FileNotFoundError:
 			if not os.path.exists('data'):#检查 该目录没有data文件
