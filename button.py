@@ -14,6 +14,7 @@ class Button():
 		self.font = pygame.font.SysFont(None, 32)
 		self.font1 = pygame.font.SysFont(None, 52)
 		# 创建按钮的rect对象，并使其居中
+		self.play_image = pygame.image.load('images/history.webp')
 		self.rect = pygame.Rect(0, 0, self.screen_rect.right / 5, self.screen_rect.bottom / 10)
 		self.rect1 = pygame.Rect(0, 0, self.screen_rect.right / 5, self.screen_rect.bottom / 10)
 		self.rect2 = pygame.Rect(0, 0, self.screen_rect.right / 2.4, self.screen_rect.bottom / 1.2)

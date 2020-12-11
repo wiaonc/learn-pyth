@@ -99,7 +99,6 @@ def check_return_button(stats, play_button, mouse_x, mouse_y):
 	button_clicked = play_button.returns_rect.collidepoint(mouse_x, mouse_y)
 	if button_clicked and not stats.game_active and stats.history_button:
 		stats.history_button = False
-		stats.history_ranking = True
 def check_reset_button(stats, play_button, mouse_x, mouse_y):
 	button_clicked = play_button.reset_rect.collidepoint(mouse_x, mouse_y)
 	if button_clicked and not stats.game_active and stats.history_button:
@@ -170,8 +169,6 @@ def update_screen(ai_settings, screen, stats, sb, ship, aliens, bullets,
 	if stats.history_button:#如果历史按钮活动状态
 		play_button.prep_history_score()
 		sb.history_score()
-		if stats.history_ranking:
-			sb.prep_ranking()
 	sb.show_score()
 	# 如果游戏处于非活动状态，就绘制Play按钮
 	if not stats.game_active and not stats.history_button:
