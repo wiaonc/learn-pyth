@@ -84,12 +84,12 @@ def start_game(ai_settings, screen, stats,  ship, aliens, bullets,sb):
 
 def check_play_button(ai_settings, screen, stats, play_button, ship, aliens, bullets,sb, mouse_x, mouse_y):
 	"""在玩家单击Play按钮时开始新游戏"""
-	button_clicked = play_button.rect.collidepoint(mouse_x, mouse_y)
+	button_clicked = play_button.play_rect.collidepoint(mouse_x, mouse_y)
 	if button_clicked and not stats.game_active and not stats.history_button:
 		start_game(ai_settings, screen, stats,  ship, aliens, bullets,sb)
 
 def check_history_button(stats, play_button,sb,mouse_x, mouse_y):
-	button_clicked = play_button.rect1.collidepoint(mouse_x, mouse_y)
+	button_clicked = play_button.history_rect.collidepoint(mouse_x, mouse_y)
 	if button_clicked and not stats.game_active:
 		stats.history_button = True
 		sb.history_score()

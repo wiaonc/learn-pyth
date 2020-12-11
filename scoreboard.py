@@ -26,9 +26,6 @@ class Scoreboard():
 		self.prep_level()
 		self.prep_ships()
 		self.load_file()
-		self.prep_ranking()
-		self.history_score()
-
 	def prep_score(self):
 		"""将得分转换为一幅渲染的图像"""
 		rounded_score = round(self.stats.score, -1)
@@ -133,12 +130,12 @@ class Scoreboard():
 		#ranking = int(round(self.stats.high_score, -1))
 		#high_score = 'history high score:'+str("{:,}".format(high_score))
 		self.rankingx = pygame.image.load('images/historyscore.png')#获取图片
-		self.ranking = pygame.transform.scale(self.rankingx,(int(self.play_button.rect2.right*0.5),
-		int(self.play_button.rect2.bottom*0.07)))#更改图片像素，
+		self.ranking = pygame.transform.scale(self.rankingx,(int(self.play_button.historybg_rect.right*0.5),
+		int(self.play_button.historybg_rect.bottom*0.07)))#更改图片像素，
 
 		self.ranking_rect = self.ranking.get_rect()
-		self.ranking_rect.right = self.play_button.rect2.right * 0.97
-		self.ranking_rect.top = self.play_button.rect2.bottom *0.15
+		self.ranking_rect.right = self.play_button.historybg_rect.right * 0.97
+		self.ranking_rect.top = self.play_button.historybg_rect.bottom *0.15
 		self.rcbt = self.ranking_rect.bottom/2.7
 		number = 0
 		#print(self.data_score)
