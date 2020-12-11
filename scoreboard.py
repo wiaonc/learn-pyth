@@ -17,13 +17,16 @@ class Scoreboard():
 		# 显示得分信息时使用的字体设置
 		self.text_color = (30, 30, 30)
 		self.font = pygame.font.SysFont(None, 32)
+		self.high_font = pygame.font.SysFont(None, 22)
 		self.dts ={}
+		self.data_score=None
 		# 准备包含最高得分和当前得分的图像
 		self.prep_score()
 		self.prep_high_score()
 		self.prep_level()
 		self.prep_ships()
 		self.load_file()
+		self.history_score()
 	def prep_score(self):
 		"""将得分转换为一幅渲染的图像"""
 		rounded_score = round(self.stats.score, -1)
@@ -34,7 +37,7 @@ class Scoreboard():
 		self.score_rect = self.score_image.get_rect()
 		self.score_rect.right = self.screen_rect.right - 20
 		self.score_rect.top = 20
-	def show_score(self):
+	def show_score(self):#刷新得分
 		"""在屏幕上显示飞船和得分"""
 		self.screen.blit(self.score_image, self.score_rect)
 		self.screen.blit(self.high_score_image, self.high_score_rect)
@@ -67,27 +70,22 @@ class Scoreboard():
 			ship.rect.x = 10 + ship_number * ship.rect.width
 			ship.rect.y = 10
 			self.ships.add(ship)
-	def prep_ranking(self):
-		#ranking = int(round(self.stats.high_score, -1))
-		#high_score = 'history high score:'+str("{:,}".format(high_score))
-		self.rankingx = pygame.image.load('1212.png')#获取图片
-		self.ranking = pygame.transform.scale(self.rankingx,(500,120))#更改图片像素，
-		self.ranking_rect = self.ranking.get_rect()
-		self.ranking_rect.right = self.play_button.rect2.right
-		self.ranking_rect.bottom = self.play_button.rect2.bottom
-		
-		self.high_score_ranking = self.font.render('1', True, 
-		self.text_color, None)
-		#将最高得分放在屏幕顶部中央
-		self.score_ranking_rect = self.high_score_ranking.get_rect()
-		
-		self.score_ranking_rect.center = self.ranking_rect.center
-		
-		self.screen.blit(self.ranking, self.ranking_rect)
-		
-		self.screen.blit(self.high_score_ranking, self.score_ranking_rect)
 
-	def dump_file(self):
+	def prep_ranking(self):
+		for data_dict in self.datas:
+			data_list = sorted(data_dict.items(),key=lambda x:x[0],reverse=True)
+			for dl in data_list:
+				for data_dt in dl[1:2]:
+					for data_d in data_dt[:9]:
+						self.data_score = ('time:'+str(data_d['times'])+
+						'  high:'+str(data_d['scores']))
+						
+						print(self.data_score)
+
+						#return self.data_score
+
+			#self.stats.history_ranking = False
+	def dump_file(self):#写入数据
 #		if not os.path.exists('data'):#检查 该目录没有data文件
 #			os.mkdir("data")#创建data文件
 		'''这里换成异常检查文件是否存在似乎更好'''
@@ -126,7 +124,7 @@ class Scoreboard():
 		self.data.append(self.dts)
 		with open ('data\historyscore.json','w') as score:
 			json.dump(self.data,score)
-	def load_file(self):
+	def load_file(self):#读取数据
 		try:
 			self.datas=[]
 			with open ('data\historyscore.json','r') as score:
@@ -143,11 +141,28 @@ class Scoreboard():
 		else:
 			pass
 	def history_score(self):
+		
+		#ranking = int(round(self.stats.high_score, -1))
+		#high_score = 'history high score:'+str("{:,}".format(high_score))
+		self.rankingx = pygame.image.load('1212.png')#获取图片
+		self.ranking = pygame.transform.scale(self.rankingx,(int(self.play_button.rect2.right*0.85),
+		int(self.play_button.rect2.bottom*0.15)))#更改图片像素，
+
+		self.ranking_rect = self.ranking.get_rect()
+		self.ranking_rect.right = self.play_button.rect2.right * 1.16
+		self.ranking_rect.top = self.play_button.rect2.top *0.9
+		self.rcbt = self.ranking_rect.bottom/6
+		#绘制字体这里还没弄好 还需要修改
+		self.high_score_ranking = self.high_font.render(self.data_score, True, self.text_color, None)
+		self.score_ranking_rect = self.high_score_ranking.get_rect()#绘制字体	
+		self.score_ranking_rect.center = self.ranking_rect.center
+		for x in range(1,10):
+
+			self.ranking_rect.top =self.rcbt+2*x*self.rcbt
+			#print(self.data_score)
+			#将最高得分放在图片中央
+			self.screen.blit(self.high_score_ranking, self.score_ranking_rect)
+			self.screen.blit(self.ranking, self.ranking_rect)
+	def prep_story_score(self):
 		pass
-		#self.load_file()
-		#self.s = []
-		#for sc in self.datas:
-			
-			#for s in max(int(sc['scores'])):
-		#	print(sc)
 		
