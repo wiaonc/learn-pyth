@@ -18,7 +18,7 @@ def run_game():
 	# 创建存储游戏统计信息的实例，并创建记分牌
 	stats = GameStats(ai_settings)
 	# 创建Play按钮
-	play_button = Button(ai_settings, screen,stats, "play",'History high score')
+	play_button = Button(ai_settings, screen,stats)
 	# 创建一艘飞船、一个子弹编组和一个外星人编组
 	ship = Ship(ai_settings,screen)
 	bullets = Group()
