@@ -77,7 +77,7 @@ class Scoreboard():
 		int(self.play_button.historybg_rect.bottom*0.06)))#更改图片像素，
 		self.ranking_rect = self.ranking.get_rect()
 		self.ranking_rect.right = self.play_button.historybg_rect.right * 0.97
-		self.ranking_bottom = self.play_button.historybg_rect.bottom*0.4
+		self.ranking_bottom = self.play_button.historybg_rect.bottom*0.05
 
 	def dump_file(self):#写入数据
 #		if not os.path.exists('data'):#检查 该目录没有data文件
@@ -141,7 +141,7 @@ class Scoreboard():
 			data_list = sorted(data_dict.items(),key=lambda x:x[0],reverse=True)
 			for dl in data_list:
 				for data_dt in dl[1:2]:
-					for self.data_d in data_dt[:9]:#遍历的数据还有问题，排名不正确，还有就是排名表的图片位置不知道怎么改
+					for self.data_d in data_dt[:9]:#遍历的数据还有问题，排名不正确.排名表的图片位置已修复
 						self.data_score = ('time:'+str(self.data_d['times'])+
 						'  high:'+str(self.data_d['scores']))
 						number += 1
@@ -149,7 +149,7 @@ class Scoreboard():
 							number=1
 						#print(self.data_score)
 						self.ranking_rect.top = self.ranking_bottom
-						self.ranking_bottom =int(self.play_button.historybg_rect.bottom*0.06)*number+35
+						self.ranking_rect.centery =self.ranking_rect.bottom + int(self.play_button.historybg_rect.bottom*0.06)*number+50
 
 						#将最高得分放在图片中央
 						self.high_score_ranking = self.high_font.render(self.data_score, True, self.text_color, None)
