@@ -18,15 +18,18 @@ class Scoreboard():
 		self.text_color = (30, 30, 30)
 		self.font = pygame.font.SysFont(None, 32)
 		self.high_font = pygame.font.SysFont(None, 22)
+		#创建一些变量
 		self.dts ={}
-		#self.data_score=None
+		self.data_ranking = []
 		# 准备包含最高得分和当前得分的图像
-		self.prep_ranking()
+		self.prep_ranking()#准备排行图像
 		self.prep_score()
 		self.prep_high_score()
 		self.prep_level()
-		self.prep_ships()
-		self.load_file()
+		self.prep_ships()#准备飞船生命值
+		self.load_file()#读取文档
+		self.prep_ranking_data()#准备分数数据
+
 	def prep_score(self):
 		"""将得分转换为一幅渲染的图像"""
 		rounded_score = round(self.stats.score, -1)
@@ -133,30 +136,30 @@ class Scoreboard():
 		else:
 			pass
 	def history_score(self):
-
-		number = 1
-		#print(self.data_score)
-		#for x in range(1,10):
+		self.number = 1
+		for data_score in self.data_ranking:
+			data_score = ('time:'+str(data_score['times'])+
+			'  high:'+str(data_score['scores']))
+			
+			self.number += 1
+			if self.number == 11:
+				self.number=1
+			self.ranking_rect.top = self.ranking_bottom
+			self.ranking_rect.centery =self.ranking_rect.bottom + int(self.play_button.historybg_rect.bottom*0.06)*self.number+50
+			#将最高得分放在图片中央
+			self.high_score_ranking = self.high_font.render(data_score, True, self.text_color, None)
+			self.score_ranking_rect = self.high_score_ranking.get_rect()#绘制字体
+			self.score_ranking_rect.center = self.ranking_rect.center
+			#绘制排行图片 和分数
+			self.screen.blit(self.high_score_ranking, self.score_ranking_rect)
+			self.screen.blit(self.ranking, self.ranking_rect)
+	def prep_ranking_data(self):
 		for data_dict in self.datas:
-			data_list = sorted(data_dict.items(),key=lambda x:x[0],reverse=True)
+			data_list = sorted(data_dict.items(),key=lambda x:int(x[0]),reverse=True)
 			for dl in data_list:
 				for data_dt in dl[1:2]:
-					for self.data_d in data_dt[:9]:#遍历的数据还有问题，排名不正确.排名表的图片位置已修复
-						self.data_score = ('time:'+str(self.data_d['times'])+
-						'  high:'+str(self.data_d['scores']))
-						number += 1
-						if number == 13:
-							number=1
-						#print(self.data_score)
-						self.ranking_rect.top = self.ranking_bottom
-						self.ranking_rect.centery =self.ranking_rect.bottom + int(self.play_button.historybg_rect.bottom*0.06)*number+50
-
-						#将最高得分放在图片中央
-						self.high_score_ranking = self.high_font.render(self.data_score, True, self.text_color, None)
-						self.score_ranking_rect = self.high_score_ranking.get_rect()#绘制字体
-						self.score_ranking_rect.center = self.ranking_rect.center
-						self.screen.blit(self.high_score_ranking, self.score_ranking_rect)
-						self.screen.blit(self.ranking, self.ranking_rect)
-	def prep_story_score(self):
-		pass
-		
+					for self.data_d in data_dt[:9]:
+						if len(self.data_ranking) == 10:
+							break
+						else:
+							self.data_ranking.append(self.data_d)
