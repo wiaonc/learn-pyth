@@ -91,10 +91,10 @@ class Scoreboard():
 		hsty = {'times':times,'scores':self.stats.high_score}
 		self.data = []
 		for d in self.datas:
-			#下面这段在for循环中修改字典耗费了我好多时间才写出来。
+			#下面这段代码块在for循环中修改字典耗费了我好多时间才写出来。
 			#原因就是还不太了解字典的属性，以及对逻辑不熟悉
-			#dx={k:v for k,v in d.items() if int(k)==self.stats.high_score}#这段还不知道怎么使用，但是如果用起来肯定是更简洁的
-
+			#下面这句还不知道怎么使用，但是如果用起来肯定是更简洁的
+			#dx={k:v for k,v in d.items() if int(k)==self.stats.high_score}
 			#self.ds={x:y for x,y in d.items()}
 			#循环遍历字典
 			for key,value in d.items():
@@ -136,16 +136,16 @@ class Scoreboard():
 		else:
 			pass
 	def history_score(self):
-		self.number = 1
+		self.number = 0
 		for data_score in self.data_ranking:
 			data_score = ('time:'+str(data_score['times'])+
 			'  high:'+str(data_score['scores']))
-			
+			#下面这里不清楚为什么要绘制11个分数排行框，如果不这样做那么第十名的分数就会跑最上面去
 			self.number += 1
 			if self.number == 11:
-				self.number=1
+				self.number=0
 			self.ranking_rect.top = self.ranking_bottom
-			self.ranking_rect.centery =self.ranking_rect.bottom + int(self.play_button.historybg_rect.bottom*0.06)*self.number+50
+			self.ranking_rect.centery =self.ranking_rect.top + int(self.play_button.historybg_rect.bottom*0.06)*self.number+50
 			#将最高得分放在图片中央
 			self.high_score_ranking = self.high_font.render(data_score, True, self.text_color, None)
 			self.score_ranking_rect = self.high_score_ranking.get_rect()#绘制字体
@@ -163,3 +163,10 @@ class Scoreboard():
 							break
 						else:
 							self.data_ranking.append(self.data_d)
+	def clearly_ranking(self):
+		try:
+			os.remove('data\historyscore.json')
+		except FileNotFoundError:
+				print('success')
+		else:
+			pass

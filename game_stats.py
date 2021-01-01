@@ -11,9 +11,11 @@ class GameStats():
 		self.high_score = 0
 		self.history_button = False
 		self.history_ranking = True
+		self.score_alien = 100
 	def reset_stats(self):
 		"""初始化在游戏运行期间可能变化的统计信息"""
 		self.ships_left = self.ai_settings.ship_limit
+		self.beat_alien = 100
 		self.score = 0
 		self.level = 1
 

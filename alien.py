@@ -1,5 +1,7 @@
 import pygame
 from pygame.sprite import Sprite
+from random import randint
+from random import choice
 
 class Alien(Sprite):
 	"""表示单个外星人的类"""
@@ -7,25 +9,47 @@ class Alien(Sprite):
 		"""初始化外星人并设置其起始位置"""
 		super().__init__()
 		self.screen = screen
+		self.screen_rect = screen.get_rect()
 		self.ai_settings = ai_settings
-		
-		# 加载外星人图像，并设置其rect属性
-		self.image = pygame.image.load('images/alien2.png')
+        # 加载外星人图像，并设置其rect属性
+		self.image = pygame.image.load('images/alien.png')
 		self.rect = self.image.get_rect()
 		
 		# 每个外星人最初都在屏幕左上角附近
-		self.rect.x =  self.rect.width
-		self.rect.y = self.rect.height
+		self.rect.x =  randint(50,self.screen_rect.right)
+		self.rect.bottom = self.rect.top
 		
 		# 存储外星人的准确位置
 		self.x = float(self.rect.x)
+		self.y = float(self.rect.y)
+		#储存外星人的X值
+		self.move_x = []
 	#def blitme(self):
 	#	"""在指定位置绘制外星人"""
 	#	self.screen.blit(self.image,self.rect)
+	def move_aliens(self):
+		while 1:
+			direction = randint(1,600)
+			x = choice([-0.2,0.2])
+			if len(self.move_x) >88:
+				break
+			for xs in range(direction):
+				self.move_x.append(x)
 	def update(self):
 		"""向左或向右移动外星人"""
-		self.x += (self.ai_settings.alien_speed_factor *
-		 self.ai_settings.fleet_direction)
+		'''更新外星人位置'''
+		self.move_aliens()
+		movex=self.move_x.pop(0)#利用列表索引方式取第一个值，这里如果换成遍历列表取值将会造成错误的结果
+		#for xx in self.move_x:
+#		if self.rect.right >= self.screen_rect.right:
+#			#if movex == 1:
+#			movex *= -1 
+#		elif self.rect.left <= 0:
+#			#if movex == -1:
+#			movex*= -1 
+		self.y += 0.4
+		self.x += movex*self.ai_settings.fleet_direction
+		self.rect.y = self.y
 		self.rect.x = self.x
 	def check_edges(self):
 		"""如果外星人位于屏幕边缘，就返回True"""

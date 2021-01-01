@@ -3,7 +3,7 @@ from time import sleep
 import pygame
 from bullet import Bullet
 from alien import Alien
-from random import randint
+
 #from settings import Settings
 
 #ai_settings = Settings()
@@ -29,7 +29,7 @@ def check_mousebuttondown(ai_settings, screen, stats, play_button,ship,
 	check_play_button(ai_settings, screen, stats, play_button,
 	ship, aliens, bullets,sb, mouse_x, mouse_y)
 	check_history_button(stats, play_button,sb, mouse_x, mouse_y)
-	check_reset_button(stats, play_button, mouse_x, mouse_y)
+	check_reset_button(stats, play_button,sb, mouse_x, mouse_y)
 	check_return_button(stats, play_button, mouse_x, mouse_y)
 def check_keydown_events(event, ai_settings, screen, ship, bullets):
 	"""响应按键"""
@@ -42,9 +42,7 @@ def check_keydown_events(event, ai_settings, screen, ship, bullets):
 	elif event.key == pygame.K_UP:
 		ship.moving_up = True
 	elif event.key == pygame.K_SPACE:
-		print(bullets)
 		fire_bullet(ai_settings, screen, ship, bullets)
-
 def check_keyup_events(event,ai_settings, screen, stats,  ship, aliens, bullets,sb):
 	"""响应松开"""
 	if event.key == pygame.K_RIGHT:
@@ -79,7 +77,7 @@ def start_game(ai_settings, screen, stats,  ship, aliens, bullets,sb):
 	aliens.empty()
 	bullets.empty()
 	# 创建一群新的外星人，并让飞船居中
-	create_fleet(ai_settings, ship,screen,  aliens)
+	create_alien(ai_settings,screen,aliens)
 	ship.center_ship()
 
 def check_play_button(ai_settings, screen, stats, play_button, ship, aliens, bullets,sb, mouse_x, mouse_y):
@@ -92,17 +90,18 @@ def check_history_button(stats, play_button,sb,mouse_x, mouse_y):
 	button_clicked = play_button.history_rect.collidepoint(mouse_x, mouse_y)
 	if button_clicked and not stats.game_active:
 		stats.history_button = True
-		sb.history_score()
+		sb.load_file()
 
 
 def check_return_button(stats, play_button, mouse_x, mouse_y):
 	button_clicked = play_button.return_rect.collidepoint(mouse_x, mouse_y)
 	if button_clicked and not stats.game_active and stats.history_button:
 		stats.history_button = False
-def check_reset_button(stats, play_button, mouse_x, mouse_y):
+def check_reset_button(stats, play_button,sb, mouse_x, mouse_y):
 	button_clicked = play_button.reset_rect.collidepoint(mouse_x, mouse_y)
 	if button_clicked and not stats.game_active and stats.history_button:
-		pass
+		sb.clearly_ranking()
+		#sb.load_file()
 def check_fleet_edges(ai_settings,aliens):
 	"""有外星人到达边缘时采取相应的措施"""
 	for alien in aliens.sprites():
@@ -122,8 +121,9 @@ def check_aliens_bottom(ai_settings, screen, stats, sb, ship, aliens, bullets):
 	for alien in aliens.sprites():
 		if alien.rect.bottom >= screen_rect.bottom:
 			# 像飞船被撞到一样进行处理
+			#create_alien(ai_settings,screen,aliens)
 			ship_hit(ai_settings, screen, stats, sb, ship, aliens, bullets)
-			break
+			#break
 
 def update_aliens(ai_settings, screen, stats, sb, ship, aliens, bullets):
 	"""检查是否有外星人位于屏幕边缘，并更新整群外星人的位置"""
@@ -150,7 +150,7 @@ def ship_hit(ai_settings, screen, stats, sb, ship, aliens, bullets):
 	aliens.empty()
 	bullets.empty()
 	# 创建一群新的外星人，并将飞船放到屏幕底端中央
-	create_fleet(ai_settings, ship,screen,  aliens)
+	create_alien(ai_settings,screen,aliens)
 	ship.center_ship()
 	# 暂停
 	sleep(0.5)
@@ -194,6 +194,17 @@ def update_bullets(ai_settings, screen, stats, sb, ship, aliens, bullets):
 	check_bullet_alien_collisions(ai_settings, screen, stats, sb, ship, 
 	aliens, bullets)
 
+def start_new_level(stats,sb,ai_settings,  ship,screen, aliens):
+	if stats.beat_alien*ai_settings.scale+stats.score_alien==stats.score:
+		# 如果整群外星人都被消灭，就提高一个等级
+		#bullets.empty()
+		stats.beat_alien = stats.beat_alien*ai_settings.scale#增加提高等级条件
+		ai_settings.increase_speed()
+		# 提高等级
+		stats.level += 1
+		sb.prep_level()
+#		create_fleet(ai_settings,  ship,screen, aliens)
+
 def check_bullet_alien_collisions(ai_settings, screen, stats, sb, ship, 
 	aliens, bullets):
 	"""响应子弹和外星人的碰撞"""
@@ -204,14 +215,7 @@ def check_bullet_alien_collisions(ai_settings, screen, stats, sb, ship,
 		stats.score += ai_settings.alien_points * len(aliens)
 		sb.prep_score()
 		check_high_score(stats, sb)
-	if len(aliens) == 0:
-		# 如果整群外星人都被消灭，就提高一个等级
-		#bullets.empty()
-		ai_settings.increase_speed()
-		# 提高等级
-		stats.level += 1
-		sb.prep_level()
-		create_fleet(ai_settings,  ship,screen, aliens)
+	start_new_level(stats,sb,ai_settings,  ship,screen, aliens)
 
 def check_high_score(stats, sb):
 	"""检查是否诞生了新的最高得分"""
@@ -219,45 +223,9 @@ def check_high_score(stats, sb):
 		stats.high_score = stats.score
 		sb.prep_high_score()
 
-def get_number_aliens_x(ai_settings,alien_width):
-	"""计算每行可容纳多少个外星人"""
-	available_space_x = ai_settings - 2 * alien_width
-	number_aliens_x = int(available_space_x / (2*alien_width))
-	return number_aliens_x
-
-def get_number_rows(ai_settings,ship_height, alien_height):
-	"""计算屏幕可容纳多少行外星人"""
-	available_space_y = (ai_settings - 3 * alien_height - ship_height)
-	number_rows = int(available_space_y /  (2*alien_height))
-	return number_rows
-
-def create_alien(ai_settings,screen,aliens,alien_number,row_number):
-	"""创建一个外星人并将其放在当前行"""
-	random_number = randint(-10,10)
-	alien = Alien(ai_settings,screen)
-	alien_width = alien.rect.width
-	alien.x = alien_width + random_number +2*alien_width*alien_number
-	alien.rect.x = alien.x
-	alien.rect.y = alien.rect.height +2*alien.rect.height*row_number
-	aliens.add(alien)
+def create_alien(ai_settings,screen,aliens):
+    """创建一个外星人并将其放在当前行"""
+    alien = Alien(ai_settings,screen)
+    if len(aliens) < 5:
+	    aliens.add(alien)
 	#print(aliens.add(alien))
-	
-def create_fleet(ai_settings,ship,screen,aliens):
-	"""创建外星人群"""
-	# 创建一个外星人，并计算一行可容纳多少个外星人
-	alien = Alien(ai_settings,screen)
-	#available_space_x = ai_settings.screen_width - 2 * alien.rect.width
-	#number_aliens_x = int(available_space_x / (2*alien.rect.width))
-	
-	#available_space_y = (ai_settings.screen_height - (3 * alien.rect.height) - ship.rect.height)
-	#number_rows = int(available_space_y /  (2*alien.rect.height))
-	
-	number_aliens_x = get_number_aliens_x(ai_settings.screen_width, alien.rect.width)
-	number_rows = get_number_rows(ai_settings.screen_height,ship.rect.height, alien.rect.height)
-	# 创建第一行外星人
-	for row_number in range(number_rows):
-		for alien_number in range(number_aliens_x):
-			create_alien(ai_settings,screen,aliens,alien_number,row_number)
-
-
-
