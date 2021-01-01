@@ -77,7 +77,7 @@ def start_game(ai_settings, screen, stats,  ship, aliens, bullets,sb):
 	aliens.empty()
 	bullets.empty()
 	# 创建一群新的外星人，并让飞船居中
-	create_alien(ai_settings,screen,aliens)
+	create_alien(ai_settings,screen,aliens,stats)
 	ship.center_ship()
 
 def check_play_button(ai_settings, screen, stats, play_button, ship, aliens, bullets,sb, mouse_x, mouse_y):
@@ -102,32 +102,15 @@ def check_reset_button(stats, play_button,sb, mouse_x, mouse_y):
 	if button_clicked and not stats.game_active and stats.history_button:
 		sb.clearly_ranking()
 		#sb.load_file()
-def check_fleet_edges(ai_settings,aliens):
-	"""有外星人到达边缘时采取相应的措施"""
-	for alien in aliens.sprites():
-		if alien.check_edges():
-			change_fleet_direction(ai_settings, aliens)
-			break
-
-def change_fleet_direction(ai_settings,aliens):
-	"""将整群外星人下移，并改变它们的方向"""
-	for alien in aliens.sprites():
-		alien.rect.y += ai_settings.fleet_drop_speed
-	ai_settings.fleet_direction *= -1
-
 def check_aliens_bottom(ai_settings, screen, stats, sb, ship, aliens, bullets):
 	"""检查是否有外星人到达了屏幕底端"""
 	screen_rect = screen.get_rect()
 	for alien in aliens.sprites():
 		if alien.rect.bottom >= screen_rect.bottom:
-			# 像飞船被撞到一样进行处理
-			#create_alien(ai_settings,screen,aliens)
-			ship_hit(ai_settings, screen, stats, sb, ship, aliens, bullets)
-			#break
-
+			aliens.remove(alien)
+			break
 def update_aliens(ai_settings, screen, stats, sb, ship, aliens, bullets):
-	"""检查是否有外星人位于屏幕边缘，并更新整群外星人的位置"""
-	check_fleet_edges(ai_settings, aliens)
+	"""更新整群外星人的位置"""
 	aliens.update()
 	# 检测外星人和飞船之间的碰撞
 	if pygame.sprite.spritecollideany(ship, aliens):
@@ -150,7 +133,7 @@ def ship_hit(ai_settings, screen, stats, sb, ship, aliens, bullets):
 	aliens.empty()
 	bullets.empty()
 	# 创建一群新的外星人，并将飞船放到屏幕底端中央
-	create_alien(ai_settings,screen,aliens)
+	create_alien(ai_settings,screen,aliens,stats)
 	ship.center_ship()
 	# 暂停
 	sleep(0.5)
@@ -195,10 +178,10 @@ def update_bullets(ai_settings, screen, stats, sb, ship, aliens, bullets):
 	aliens, bullets)
 
 def start_new_level(stats,sb,ai_settings,  ship,screen, aliens):
-	if stats.beat_alien*ai_settings.scale+stats.score_alien==stats.score:
-		# 如果整群外星人都被消灭，就提高一个等级
+	if stats.beat_alien*ai_settings.speedup_scale+stats.score_alien<=stats.score:
+		# 如果到达等级条件，就提高一个等级
 		#bullets.empty()
-		stats.beat_alien = stats.beat_alien*ai_settings.scale#增加提高等级条件
+		stats.beat_alien += stats.beat_alien*ai_settings.speedup_scale#增加提高等级条件
 		ai_settings.increase_speed()
 		# 提高等级
 		stats.level += 1
@@ -223,9 +206,8 @@ def check_high_score(stats, sb):
 		stats.high_score = stats.score
 		sb.prep_high_score()
 
-def create_alien(ai_settings,screen,aliens):
-    """创建一个外星人并将其放在当前行"""
-    alien = Alien(ai_settings,screen)
-    if len(aliens) < 5:
-	    aliens.add(alien)
-	#print(aliens.add(alien))
+def create_alien(ai_settings,screen,aliens,stats):
+	"""创建一个外星人并将其放在当前行"""
+	alien = Alien(ai_settings,screen)
+	if len(aliens) < 3+int(stats.level/2):
+		aliens.add(alien)

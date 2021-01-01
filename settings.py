@@ -10,14 +10,13 @@ class Settings():
 		self.bullet_width = 6
 		self.bullet_height = 15
 		self.bullet_color = 60,60,90
-		self.bullets_allowed = 7
+		self.bullets_allowed = 12
 		# 外星人设置
 		self.fleet_drop_speed = 10
 		# fleet_direction为1表示向右移，为-1表示向左移
 		self.fleet_direction = 1
 		# 以什么样的速度加快游戏节奏
 		self.speedup_scale = 1.1
-		self.scale =1.2
 		# 外星人点数的提高速度
 		self.score_scale = 1.3
 		self.initialize_dynamic_settings()

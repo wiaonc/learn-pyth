@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{858a4e37-52ac-4a9e-9585-0d545c8e1978}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>123.py</StartupFile>
+    <StartupFile>start.py</StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -19,7 +19,7 @@
     <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="123.py" />
+    <Compile Include="start.py" />
     <Compile Include="alien.py" />
     <Compile Include="bullet.py" />
     <Compile Include="button.py" />

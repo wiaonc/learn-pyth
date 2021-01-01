@@ -38,7 +38,7 @@ def run_game():
 		if stats.game_active:
 			#更新飞船的位置
 			ship.update()
-			gf.create_alien(ai_settings,screen,aliens)
+			gf.create_alien(ai_settings,screen,aliens,stats)
 			#更新所有未消失的子弹的位置
 			gf.update_bullets(ai_settings, screen, stats, sb, ship, aliens, 
 			bullets)

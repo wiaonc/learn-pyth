@@ -2,6 +2,7 @@ import pygame
 from pygame.sprite import Sprite
 from random import randint
 from random import choice
+import game_functions as gf
 
 class Alien(Sprite):
 	"""表示单个外星人的类"""
@@ -16,7 +17,7 @@ class Alien(Sprite):
 		self.rect = self.image.get_rect()
 		
 		# 每个外星人最初都在屏幕左上角附近
-		self.rect.x =  randint(50,self.screen_rect.right)
+		self.rect.x =  randint(50,self.screen_rect.right-50)
 		self.rect.bottom = self.rect.top
 		
 		# 存储外星人的准确位置
@@ -40,21 +41,11 @@ class Alien(Sprite):
 		'''更新外星人位置'''
 		self.move_aliens()
 		movex=self.move_x.pop(0)#利用列表索引方式取第一个值，这里如果换成遍历列表取值将会造成错误的结果
-		#for xx in self.move_x:
-#		if self.rect.right >= self.screen_rect.right:
-#			#if movex == 1:
-#			movex *= -1 
-#		elif self.rect.left <= 0:
-#			#if movex == -1:
-#			movex*= -1 
-		self.y += 0.4
-		self.x += movex*self.ai_settings.fleet_direction
+		if self.rect.right >= self.screen_rect.right:
+			movex *= -1
+		elif self.rect.left <= 0:
+			movex *= -1
+		self.y += 0.4*self.ai_settings.alien_speed_factor
+		self.x += movex*self.ai_settings.alien_speed_factor
 		self.rect.y = self.y
 		self.rect.x = self.x
-	def check_edges(self):
-		"""如果外星人位于屏幕边缘，就返回True"""
-		screen_rect = self.screen.get_rect()
-		if self.rect.right >= screen_rect.right:
-			return True
-		elif self.rect.left <= 0:
-			return True
