@@ -17,7 +17,6 @@ class Ship(Sprite):
 		self.centerx = float(self.rect.centerx)
 		#函数float()将值转换为小数
 		self.bottom = float(self.rect.bottom)
-		
 		self.moving_right = False
 		self.moving_left = False
 		self.moving_up = False

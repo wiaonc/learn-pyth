@@ -23,7 +23,7 @@ class Button():
 		self.historybg_rect = self.historybg_size.get_rect()
 		self.historybg_rect.center = self.screen_rect.center
 	def prep_play(self):
-		""""""
+		"""准备一个开始按钮"""
 		self.play_image = pygame.image.load('images/start.png')
 		self.play_size = pygame.transform.scale(self.play_image,(int(self.screen_rect.right / 5.5), int(self.screen_rect.bottom / 10)))
 		self.play_rect = self.play_size.get_rect()

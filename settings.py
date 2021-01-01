@@ -28,7 +28,7 @@ class Settings():
 		# 记分
 		self.alien_points = 5
 	def increase_speed(self):
-		"""提高速度设置和外星人点数"""
+		"""提高速度设置和外星人分数"""
 		self.ship_speed_factor *= self.speedup_scale
 		self.bullet_speed_factor *= self.speedup_scale
 		self.alien_speed_factor *= self.speedup_scale
